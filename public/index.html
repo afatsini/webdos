@@ -14,8 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- Custom styling -->
     <link rel="stylesheet" href="/styles.css">
-    <!-- Socket.io client library -->
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- js-dos style sheet -->
+    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+
+    <!-- js-dos -->
+    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
 </head>
 
 <body>
@@ -35,9 +38,6 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="collection-heading">Games <span id="game-count" class="game-count">0</span></h2>
-            <div id="connection-status" class="connection-status" title="Real-time updates status">
-                <i class="fas fa-sync-alt"></i>
-            </div>
         </div>
 
         <div id="games-container" class="games-container">
