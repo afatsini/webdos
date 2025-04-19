@@ -9,6 +9,11 @@ require('dotenv').config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Setup HTTP server for socket.io
+const http = require('http');
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -220,7 +225,7 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
@@ -232,8 +237,14 @@ const watcher = chokidar.watch(gamesDir, {
 
 // Log file changes
 watcher
-    .on('add', path => console.log(`Game added: ${path}`))
-    .on('unlink', path => console.log(`Game removed: ${path}`))
+    .on('add', path => {
+        console.log(`Game added: ${path}`);
+        io.emit('gameAdded', path);
+    })
+    .on('unlink', path => {
+        console.log(`Game removed: ${path}`);
+        io.emit('gameRemoved', path);
+    })
     .on('error', error => console.error(`Watcher error: ${error}`));
 
 console.log(`Watching for changes in the games directory: ${gamesDir}`);

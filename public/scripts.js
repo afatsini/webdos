@@ -20,6 +20,68 @@ document.addEventListener('DOMContentLoaded', () => {
     bootSequence();
     fetchGames();
 
+    // Feature 4: Set up WebSocket connection for real-time updates
+    setupWebSocketConnection();
+
+    // Function to establish WebSocket connection
+    function setupWebSocketConnection() {
+        const socket = io();
+        
+        // Listen for game added event
+        socket.on('gameAdded', (path) => {
+            console.log(`Game added: ${path}`);
+            showNotification('New game detected', 'Updating game list...');
+            fetchGames();
+        });
+        
+        // Listen for game removed event
+        socket.on('gameRemoved', (path) => {
+            console.log(`Game removed: ${path}`);
+            showNotification('Game removed', 'Updating game list...');
+            fetchGames();
+        });
+        
+        // Handle connection status
+        socket.on('connect', () => {
+            console.log('Real-time updates connected');
+            document.getElementById('connection-status').classList.add('connected');
+            document.getElementById('connection-status').setAttribute('title', 'Real-time updates connected');
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Real-time updates disconnected');
+            document.getElementById('connection-status').classList.remove('connected');
+            document.getElementById('connection-status').setAttribute('title', 'Real-time updates disconnected');
+        });
+    }
+    
+    // Function to show notification
+    function showNotification(title, message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <h4>${title}</h4>
+                <p>${message}</p>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate notification in
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Remove notification after a delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+
     // Function to fetch games from our API
     async function fetchGames() {
         try {
