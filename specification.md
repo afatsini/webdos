@@ -1,5 +1,8 @@
 # Website Specification
 
+# Pologe
+This site have been created via AI using this specification
+
 ## Overview
 The website will list all the games available in the `games` folder. Each game will be displayed with its name and cover image. The cover images will be fetched from `https://www.coverbrowser.com/covers/dos-games`. For each game, there will be a play button to play the game in the browser.
 
@@ -18,11 +21,7 @@ The website will list all the games available in the `games` folder. Each game w
 - **Responsive Design**: Ensure the website is fully responsive and adapts to different screen sizes, including mobile, tablet, and desktop.
 - **Custom Styling**: Add custom CSS for unique design elements, such as hover effects on game cards.
 
-### 4. **Dynamic Content**
-- **Real-Time Updates**: Use JavaScript to dynamically update the game list if new `.zip` files are added to the `games` folder without requiring a page refresh.
-- **File Watcher**: Implement a backend file watcher (e.g., using Node.js `fs` module) to detect changes in the `games` folder and notify the frontend via WebSocket or API.
-
-### 5. **Play Games in Browser**
+### 4. **Play Games in Browser**
 - **Emulator Integration**: Integrate `js-dos` to allow users to play games directly in the browser.
 - **Emulator Setup**: Follow the `js-dos` documentation to embed the emulator and configure it to load `.zip` files.
 - **Play Button**: Add a "Play" button for each game. When clicked, initialize the emulator with the selected game.
