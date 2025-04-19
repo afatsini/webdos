@@ -12,11 +12,51 @@ A web application for running classic DOS games directly in your browser. WebDOS
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (version 12 or higher)
+- [Node.js](https://nodejs.org/) (version 12 or higher) - *only needed for non-Docker installation*
 - A modern web browser (Chrome, Firefox, Safari, or Edge)
 - IGDB API credentials (for automatic cover image fetching)
+- Docker and Docker Compose (for Docker installation)
 
 ## Installation
+
+### Using Docker (Recommended)
+
+1. Clone this repository or download the project files:
+
+```bash
+git clone https://github.com/yourusername/webdos.git
+cd webdos
+```
+
+2. Configure environment variables:
+
+Edit the `docker-compose.yml` file and uncomment the IGDB credentials lines, adding your API keys.
+Or create a `.env` file in the project root with:
+
+```
+IGDB_CLIENT_ID=your_client_id_here
+IGDB_CLIENT_SECRET=your_client_secret_here
+```
+
+3. Build and start the container:
+
+```bash
+docker-compose up -d
+```
+
+4. Open your browser and navigate to:
+
+```
+http://localhost:3000
+```
+
+To stop the container:
+
+```bash
+docker-compose down
+```
+
+### Without Docker
 
 1. Clone this repository or download the project files:
 
@@ -101,6 +141,8 @@ Example:
   - `placeholder.jpg` - Default image used when a cover isn't available
 - `games/` - Folder to store DOS game ZIP files
 - `covers/` - Folder to store game cover images (both manual and auto-fetched)
+- `Dockerfile` - Instructions for building the Docker container
+- `docker-compose.yml` - Configuration for running the application with Docker Compose
 
 ## Future Enhancements
 

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  webdos:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./games:/usr/src/app/games
+      - ./covers:/usr/src/app/covers
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      # Uncomment and fill these with your IGDB credentials
+      # - IGDB_CLIENT_ID=your_client_id_here
+      # - IGDB_CLIENT_SECRET=your_client_secret_here
+    restart: unless-stopped
