@@ -9,7 +9,7 @@ The website will list all the games available in the `games` folder. Each game w
 - **File Detection**: Automatically detect all `.zip` files in the `games` folder. Each `.zip` file represents a game.
 
 ### 2. **Image Cover**
-- **Cover Image Fetching**: Use the game name (derived from the `.zip` file name) to fetch the corresponding cover image from `https://www.coverbrowser.com/covers/dos-games`. If no cover is found, use a default placeholder image.
+- **Cover Image Fetching**: Use the game name (derived from the `.zip` file name) to fetch the corresponding cover image using the api spec found in `https://api-docs.igdb.com/#company-website`. If no cover is found, use a default placeholder image.
 - **Game Display**: Display the game name and cover image in a grid layout on the frontend.
 - **Reference Design**: Use `https://dosgames.com/games/` as a reference for layout and design.
 
