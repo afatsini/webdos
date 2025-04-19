@@ -1,0 +1,470 @@
+:root {
+    --primary-color: #1a1a2e;
+    --secondary-color: #16213e;
+    --accent-color: #e94560;
+    --light-color: #0f3460;
+    --dark-color: #0f0f0f;
+    --success-color: #4ecca3;
+    --text-color: #eeeeee;
+    --hover-transform: translateY(-8px);
+    --terminal-green: #4ecca3;
+    --neon-glow: 0 0 10px rgba(233, 69, 96, 0.8), 0 0 20px rgba(233, 69, 96, 0.6), 0 0 30px rgba(233, 69, 96, 0.4);
+}
+
+body {
+    background-color: var(--dark-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+    position: relative;
+    background-image: linear-gradient(to bottom, #1a1a2e, #16213e);
+    background-attachment: fixed;
+}
+
+/* DOS-inspired CRT scan lines effect */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+}
+
+.page-header {
+    background-color: var(--primary-color);
+    color: var(--terminal-green);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border-bottom: 3px solid var(--accent-color);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header scanlines for retro effect */
+.page-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+}
+
+.page-title {
+    font-family: 'Press Start 2P', cursive;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: var(--neon-glow);
+    color: var(--accent-color);
+}
+
+.page-subtitle {
+    font-weight: 300;
+    opacity: 0.8;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 2px;
+}
+
+.dos-prompt {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--terminal-green);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dos-prompt::before {
+    content: "C:\\>";
+    margin-right: 8px;
+}
+
+.dos-prompt::after {
+    content: "";
+    width: 10px;
+    height: 16px;
+    background-color: var(--terminal-green);
+    display: inline-block;
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.games-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.game-card {
+    background: var(--secondary-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 2px solid var(--light-color);
+}
+
+.game-card:hover {
+    transform: var(--hover-transform) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    border-color: var(--accent-color);
+}
+
+.game-image-container {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background-color: black;
+}
+
+.game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    opacity: 0.9;
+}
+
+.game-card:hover .game-image {
+    transform: scale(1.08);
+    opacity: 1;
+}
+
+.game-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-color);
+    position: relative;
+    border-top: 2px solid var(--light-color);
+}
+
+.game-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--terminal-green);
+    font-family: 'Press Start 2P', cursive;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(78, 204, 163, 0.5);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.play-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    margin-top: auto;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.play-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease-in-out;
+}
+
+.play-button:hover {
+    background-color: var(--terminal-green);
+    transform: translateY(-2px);
+}
+
+.play-button:hover::after {
+    left: 100%;
+}
+
+.play-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    width: 100%;
+    position: relative;
+}
+
+.loading-spinner {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.loading-spinner div {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    animation: loading-spinner 1.2s linear infinite;
+}
+
+.loading-spinner div:nth-child(1) {
+    top: 8px;
+    left: 8px;
+    animation-delay: 0s;
+}
+
+.loading-spinner div:nth-child(2) {
+    top: 8px;
+    left: 32px;
+    animation-delay: -0.4s;
+}
+
+.loading-spinner div:nth-child(3) {
+    top: 8px;
+    left: 56px;
+    animation-delay: -0.8s;
+}
+
+.loading-spinner div:nth-child(4) {
+    top: 32px;
+    left: 8px;
+    animation-delay: -0.4s;
+}
+
+.loading-spinner div:nth-child(5) {
+    top: 32px;
+    left: 32px;
+    animation-delay: -0.8s;
+}
+
+.loading-spinner div:nth-child(6) {
+    top: 32px;
+    left: 56px;
+    animation-delay: -1.2s;
+}
+
+.loading-spinner div:nth-child(7) {
+    top: 56px;
+    left: 8px;
+    animation-delay: -0.8s;
+}
+
+.loading-spinner div:nth-child(8) {
+    top: 56px;
+    left: 32px;
+    animation-delay: -1.2s;
+}
+
+.loading-spinner div:nth-child(9) {
+    top: 56px;
+    left: 56px;
+    animation-delay: -1.6s;
+}
+
+@keyframes loading-spinner {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--terminal-green);
+    animation: loading-text 1.5s infinite;
+    font-size: 0.8rem;
+}
+
+@keyframes loading-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.error-message, .empty-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    color: var(--text-color);
+    border: 2px solid var(--accent-color);
+    width: 100%;
+}
+
+.error-message i, .empty-message i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+.empty-message i {
+    color: var(--terminal-green);
+}
+
+.error-message h3, .empty-message h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    color: var(--accent-color);
+}
+
+/* Game count badge */
+.collection-heading {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--terminal-green);
+    font-size: 1.3rem;
+    text-shadow: 0 0 5px rgba(78, 204, 163, 0.5);
+}
+
+.game-count {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    margin-left: 1rem;
+    display: inline-block;
+    position: relative;
+    top: -3px;
+}
+
+/* Top game indicator */
+.top-game-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.5rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    z-index: 10;
+    font-family: 'Press Start 2P', cursive;
+    transform: rotate(5deg);
+    box-shadow: 0 0 10px rgba(233, 69, 96, 0.7);
+    text-transform: uppercase;
+}
+
+/* Footer */
+.site-footer {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    border-top: 3px solid var(--accent-color);
+    position: relative;
+}
+
+.footer-text {
+    font-family: 'Roboto', sans-serif;
+    opacity: 0.7;
+}
+
+/* Pixel pattern overlay for more gaming feel */
+.pixel-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.03)' x='0' y='0'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+    .games-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+    .game-image-container {
+        height: 220px;
+    }
+    .game-name {
+        font-size: 0.7rem;
+    }
+    .collection-heading {
+        font-size: 1rem;
+    }
+    .play-button {
+        font-size: 0.6rem;
+        padding: 0.6rem 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-title {
+        font-size: 1.5rem;
+    }
+    .games-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .game-card:hover {
+        transform: translateY(-4px);
+    }
+    .dos-prompt {
+        font-size: 0.7rem;
+    }
+}
