@@ -5,116 +5,551 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebDOS - DOS Games in Browser</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts - Press Start 2P for retro gaming feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Custom styling -->
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #e94560;
+            --light-color: #0f3460;
+            --dark-color: #0f0f0f;
+            --success-color: #4ecca3;
+            --text-color: #eeeeee;
+            --hover-transform: translateY(-8px);
+            --terminal-green: #4ecca3;
+            --neon-glow: 0 0 10px rgba(233, 69, 96, 0.8), 0 0 20px rgba(233, 69, 96, 0.6), 0 0 30px rgba(233, 69, 96, 0.4);
         }
 
         body {
-            background-color: #f5f5f5;
-            padding: 20px;
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            background-image: linear-gradient(to bottom, #1a1a2e, #16213e);
+            background-attachment: fixed;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+        /* DOS-inspired CRT scan lines effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.5;
+        }
+
+        .page-header {
+            background-color: var(--primary-color);
+            color: var(--terminal-green);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-bottom: 3px solid var(--accent-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header scanlines for retro effect */
+        .page-header::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+        }
+
+        .page-title {
+            font-family: 'Press Start 2P', cursive;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: var(--neon-glow);
+            color: var(--accent-color);
+        }
+
+        .page-subtitle {
+            font-weight: 300;
+            opacity: 0.8;
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .dos-prompt {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dos-prompt::before {
+            content: "C:\\>";
+            margin-right: 8px;
+        }
+
+        .dos-prompt::after {
+            content: "";
+            width: 10px;
+            height: 16px;
+            background-color: var(--terminal-green);
+            display: inline-block;
+            margin-left: 5px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         .games-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 1rem;
+            position: relative;
+            z-index: 2;
         }
 
         .game-card {
-            background: white;
+            background: var(--secondary-color);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
             display: flex;
             flex-direction: column;
+            position: relative;
+            border: 2px solid var(--light-color);
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: var(--hover-transform) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            border-color: var(--accent-color);
         }
 
         .game-image-container {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 280px;
             overflow: hidden;
-            background-color: #111;
+            background-color: black;
         }
 
         .game-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s ease;
+            opacity: 0.9;
         }
 
         .game-card:hover .game-image {
-            transform: scale(1.05);
+            transform: scale(1.08);
+            opacity: 1;
         }
 
         .game-info {
-            padding: 15px;
+            padding: 1.5rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            background-color: var(--secondary-color);
+            position: relative;
+            border-top: 2px solid var(--light-color);
         }
 
         .game-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .loading {
-            text-align: center;
-            font-size: 20px;
-            color: #666;
-            padding: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--terminal-green);
+            font-family: 'Press Start 2P', cursive;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(78, 204, 163, 0.5);
+            text-transform: uppercase;
+            font-size: 0.9rem;
         }
 
         .play-button {
-            background-color: #4CAF50;
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 0.75rem 1rem;
             border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
             margin-top: auto;
-            transition: background-color 0.2s;
+            text-transform: uppercase;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease-in-out;
         }
 
         .play-button:hover {
-            background-color: #45a049;
+            background-color: var(--terminal-green);
+            transform: translateY(-2px);
+        }
+
+        .play-button:hover::after {
+            left: 100%;
+        }
+
+        .play-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            width: 100%;
+            position: relative;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .loading-spinner div {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            animation: loading-spinner 1.2s linear infinite;
+        }
+
+        .loading-spinner div:nth-child(1) {
+            top: 8px;
+            left: 8px;
+            animation-delay: 0s;
+        }
+
+        .loading-spinner div:nth-child(2) {
+            top: 8px;
+            left: 32px;
+            animation-delay: -0.4s;
+        }
+
+        .loading-spinner div:nth-child(3) {
+            top: 8px;
+            left: 56px;
+            animation-delay: -0.8s;
+        }
+
+        .loading-spinner div:nth-child(4) {
+            top: 32px;
+            left: 8px;
+            animation-delay: -0.4s;
+        }
+
+        .loading-spinner div:nth-child(5) {
+            top: 32px;
+            left: 32px;
+            animation-delay: -0.8s;
+        }
+
+        .loading-spinner div:nth-child(6) {
+            top: 32px;
+            left: 56px;
+            animation-delay: -1.2s;
+        }
+
+        .loading-spinner div:nth-child(7) {
+            top: 56px;
+            left: 8px;
+            animation-delay: -0.8s;
+        }
+
+        .loading-spinner div:nth-child(8) {
+            top: 56px;
+            left: 32px;
+            animation-delay: -1.2s;
+        }
+
+        .loading-spinner div:nth-child(9) {
+            top: 56px;
+            left: 56px;
+            animation-delay: -1.6s;
+        }
+
+        @keyframes loading-spinner {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--terminal-green);
+            animation: loading-text 1.5s infinite;
+            font-size: 0.8rem;
+        }
+
+        @keyframes loading-text {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-message, .empty-message {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            width: 100%;
+        }
+
+        .error-message i, .empty-message i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .empty-message i {
+            color: var(--terminal-green);
+        }
+
+        .error-message h3, .empty-message h3 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            color: var(--accent-color);
+        }
+
+        /* Game count badge */
+        .collection-heading {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--terminal-green);
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px rgba(78, 204, 163, 0.5);
+        }
+
+        .game-count {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            margin-left: 1rem;
+            display: inline-block;
+            position: relative;
+            top: -3px;
+        }
+
+        /* Top game indicator */
+        .top-game-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.6rem;
+            font-weight: 600;
+            z-index: 10;
+            font-family: 'Press Start 2P', cursive;
+            transform: rotate(5deg);
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.7);
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        .site-footer {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-top: 3px solid var(--accent-color);
+            position: relative;
+        }
+
+        .footer-text {
+            font-family: 'Roboto', sans-serif;
+            opacity: 0.7;
+        }
+
+        /* Pixel pattern overlay for more gaming feel */
+        .pixel-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.03)' x='0' y='0'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            .games-container {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+            .game-image-container {
+                height: 220px;
+            }
+            .game-name {
+                font-size: 0.7rem;
+            }
+            .collection-heading {
+                font-size: 1rem;
+            }
+            .play-button {
+                font-size: 0.6rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .games-container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .game-card:hover {
+                transform: translateY(-4px);
+            }
+            .dos-prompt {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>WebDOS - DOS Games Collection</h1>
+    <!-- Pixel pattern overlay -->
+    <div class="pixel-pattern"></div>
 
-    <div id="games-container" class="games-container">
-        <div class="loading">Loading games...</div>
+    <!-- Header -->
+    <header class="page-header">
+        <div class="container text-center">
+            <h1 class="page-title">WebDOS</h1>
+            <p class="page-subtitle">Classic DOS Games in Your Browser</p>
+            <div class="dos-prompt">LOAD GAME</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="collection-heading">Games <span id="game-count" class="game-count">0</span></h2>
+        </div>
+
+        <div id="games-container" class="games-container">
+            <div class="loading-container">
+                <div class="loading-spinner">
+                    <div></div><div></div><div></div>
+                    <div></div><div></div><div></div>
+                    <div></div><div></div><div></div>
+                </div>
+                <div class="loading-text">LOADING GAMES...</div>
+            </div>
+        </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p class="footer-text">&copy; 2025 WebDOS - Bringing classic DOS games back to life</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Feature 1 & 2: Game Listing with Cover Images - Frontend implementation
+        // Feature 1, 2 & 3 implementation
         document.addEventListener('DOMContentLoaded', () => {
+            // Add retro boot sequence effect
+            const bootSequence = async () => {
+                const header = document.querySelector('.page-header');
+                header.style.opacity = '0';
+                await new Promise(resolve => setTimeout(resolve, 200));
+                header.style.opacity = '1';
+                header.style.transition = 'opacity 0.5s ease';
+                
+                // Add glitch effect on page load
+                setTimeout(() => {
+                    document.body.style.filter = 'brightness(2) contrast(2)';
+                    setTimeout(() => {
+                        document.body.style.filter = 'none';
+                        document.body.style.transition = 'filter 0.2s ease';
+                    }, 100);
+                }, 300);
+            };
+            
+            bootSequence();
             fetchGames();
 
             // Function to fetch games from our API
@@ -125,53 +560,111 @@
                         throw new Error('Failed to fetch games');
                     }
                     const games = await response.json();
-                    displayGames(games);
+                    
+                    // Add a slight delay for the loading animation
+                    setTimeout(() => {
+                        displayGames(games);
+                    }, 800);
                 } catch (error) {
                     console.error('Error fetching games:', error);
-                    document.getElementById('games-container').innerHTML =
-                        '<div class="loading">Error loading games. Please try again later.</div>';
+                    document.getElementById('games-container').innerHTML = `
+                        <div class="col-12">
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>SYSTEM ERROR</h3>
+                                <p>Could not load game data. Please check your connection and try again.</p>
+                                <div class="mt-3">
+                                    <code>ERROR CODE: 0x45RR</code>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
             }
 
             // Function to display the games on the page
             function displayGames(games) {
                 const container = document.getElementById('games-container');
+                
+                // Update game count
+                document.getElementById('game-count').textContent = games.length;
 
                 if (games.length === 0) {
-                    container.innerHTML = '<div class="loading">No games found. Add ZIP files to the games folder.</div>';
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="empty-message">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>NO GAMES FOUND</h3>
+                                <p>Insert game disks (ZIP files) to the games folder.</p>
+                                <div class="mt-3">
+                                    <code>PATH: C:\\GAMES\\</code>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     return;
                 }
 
-                // Clear loading message
+                // Clear loading spinner
                 container.innerHTML = '';
 
                 // Create a card for each game
-                games.forEach(game => {
+                games.forEach((game, index) => {
                     const gameCard = document.createElement('div');
                     gameCard.className = 'game-card';
 
-                    // Feature 2: Use the cover path provided by the backend
-                    // If no cover is found, the backend will set the coverPath to the placeholder
+                    // Stagger the animation for each card
+                    gameCard.style.opacity = "0";
+                    gameCard.style.transform = "translateY(20px)";
+                    gameCard.style.transition = `all 0.3s ease ${index * 0.1}s`;
+
+                    // Use the cover path provided by the backend
                     const coverPath = game.coverPath;
 
+                    // Mark the first two games as "Top Games" for visual interest
+                    const topGameBadge = index < 2 ? 
+                        `<div class="top-game-badge">Top Game</div>` : '';
+
                     gameCard.innerHTML = `
+                        ${topGameBadge}
                         <div class="game-image-container">
                             <img src="${coverPath}" alt="${game.name}" class="game-image" onerror="this.src='/placeholder.jpg'">
                         </div>
                         <div class="game-info">
                             <div class="game-name">${game.name}</div>
-                            <button class="play-button" data-game-path="${game.path}">Play Game</button>
+                            <button class="play-button" data-game-path="${game.path}">
+                                <i class="fas fa-play"></i> PLAY
+                            </button>
                         </div>
                     `;
 
                     container.appendChild(gameCard);
+                    
+                    // Trigger animation after a small delay
+                    setTimeout(() => {
+                        gameCard.style.opacity = "1";
+                        gameCard.style.transform = "translateY(0)";
+                    }, 100);
                 });
 
                 // Add event listeners to play buttons (will be implemented in Feature 5)
                 document.querySelectorAll('.play-button').forEach(button => {
-                    button.addEventListener('click', function () {
+                    button.addEventListener('click', function() {
                         const gamePath = this.getAttribute('data-game-path');
                         console.log(`Play button clicked for game: ${gamePath}`);
+                        
+                        // Add click effect
+                        this.style.transform = "scale(0.95)";
+                        setTimeout(() => {
+                            this.style.transform = "";
+                        }, 150);
+                        
+                        // Screen flash effect when game is started (placeholder for Feature 5)
+                        document.body.style.filter = 'brightness(1.5)';
+                        setTimeout(() => {
+                            document.body.style.filter = 'none';
+                        }, 150);
+                        
                         // This will be implemented in Feature 5
                     });
                 });
