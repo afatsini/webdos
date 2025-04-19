@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         header.style.opacity = '1';
         header.style.transition = 'opacity 0.5s ease';
-        
+
         // Add glitch effect on page load
         setTimeout(() => {
             document.body.style.filter = 'brightness(2) contrast(2)';
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 100);
         }, 300);
     };
-    
+
     bootSequence();
     fetchGames();
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Failed to fetch games');
             }
             const games = await response.json();
-            
+
             // Add a slight delay for the loading animation
             setTimeout(() => {
                 displayGames(games);
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to display the games on the page
     function displayGames(games) {
         const container = document.getElementById('games-container');
-        
+
         // Update game count
         document.getElementById('game-count').textContent = games.length;
 
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const coverPath = game.coverPath;
 
             // Mark the first two games as "Top Games" for visual interest
-            const topGameBadge = index < 2 ? 
+            const topGameBadge = index < 2 ?
                 `<div class="top-game-badge">Top Game</div>` : '';
 
             gameCard.innerHTML = `
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             container.appendChild(gameCard);
-            
+
             // Trigger animation after a small delay
             setTimeout(() => {
                 gameCard.style.opacity = "1";
@@ -117,22 +117,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add event listeners to play buttons (will be implemented in Feature 5)
         document.querySelectorAll('.play-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const gamePath = this.getAttribute('data-game-path');
                 console.log(`Play button clicked for game: ${gamePath}`);
-                
+
                 // Add click effect
                 this.style.transform = "scale(0.95)";
                 setTimeout(() => {
                     this.style.transform = "";
                 }, 150);
-                
+
                 // Screen flash effect when game is started (placeholder for Feature 5)
                 document.body.style.filter = 'brightness(1.5)';
                 setTimeout(() => {
                     document.body.style.filter = 'none';
                 }, 150);
-                
+
                 // This will be implemented in Feature 5
             });
         });

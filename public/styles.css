@@ -29,13 +29,11 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.15),
-        rgba(0, 0, 0, 0.15) 1px,
-        transparent 1px,
-        transparent 2px
-    );
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px);
     pointer-events: none;
     z-index: 1000;
     opacity: 0.5;
@@ -60,13 +58,11 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.1),
-        rgba(0, 0, 0, 0.1) 1px,
-        transparent 1px,
-        transparent 2px
-    );
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.1),
+            rgba(0, 0, 0, 0.1) 1px,
+            transparent 1px,
+            transparent 2px);
     pointer-events: none;
 }
 
@@ -112,8 +108,15 @@ body::before {
 }
 
 @keyframes blink {
-    from, to { opacity: 0; }
-    50% { opacity: 1; }
+
+    from,
+    to {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 .games-container {
@@ -315,9 +318,12 @@ body::before {
 }
 
 @keyframes loading-spinner {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
@@ -332,11 +338,19 @@ body::before {
 }
 
 @keyframes loading-text {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
-.error-message, .empty-message {
+.error-message,
+.empty-message {
     text-align: center;
     padding: 2rem;
     background-color: var(--secondary-color);
@@ -347,7 +361,8 @@ body::before {
     width: 100%;
 }
 
-.error-message i, .empty-message i {
+.error-message i,
+.empty-message i {
     font-size: 3rem;
     margin-bottom: 1rem;
     color: var(--accent-color);
@@ -357,7 +372,8 @@ body::before {
     color: var(--terminal-green);
 }
 
-.error-message h3, .empty-message h3 {
+.error-message h3,
+.empty-message h3 {
     font-family: 'Press Start 2P', cursive;
     font-size: 1.2rem;
     margin: 1rem 0;
@@ -434,19 +450,24 @@ body::before {
     .page-title {
         font-size: 1.8rem;
     }
+
     .games-container {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
     }
+
     .game-image-container {
         height: 220px;
     }
+
     .game-name {
         font-size: 0.7rem;
     }
+
     .collection-heading {
         font-size: 1rem;
     }
+
     .play-button {
         font-size: 0.6rem;
         padding: 0.6rem 0.8rem;
@@ -457,13 +478,16 @@ body::before {
     .page-title {
         font-size: 1.5rem;
     }
+
     .games-container {
         grid-template-columns: 1fr;
         gap: 16px;
     }
+
     .game-card:hover {
         transform: translateY(-4px);
     }
+
     .dos-prompt {
         font-size: 0.7rem;
     }
