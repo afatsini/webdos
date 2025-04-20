@@ -19,6 +19,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// API endpoint for getting environment variables for frontend
+app.get('/api/env', (req, res) => {
+    res.json({
+        JS_DOS_KEY: process.env.JS_DOS_KEY || ''
+    });
+});
+
 // Games directory path
 const gamesDir = path.join(__dirname, 'games');
 const coversDir = path.join(__dirname, 'covers');

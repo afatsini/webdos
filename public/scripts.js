@@ -20,6 +20,25 @@ document.addEventListener('DOMContentLoaded', () => {
     bootSequence();
     fetchGames();
 
+    // Fetch environment variables from server
+    let jsDosKey = '';
+    async function fetchEnvironmentVariables() {
+        try {
+            const response = await fetch('/api/env');
+            if (response.ok) {
+                const data = await response.json();
+                jsDosKey = data.JS_DOS_KEY || '';
+                console.log('Environment variables loaded');
+            } else {
+                console.error('Failed to load environment variables');
+            }
+        } catch (error) {
+            console.error('Error loading environment variables:', error);
+        }
+    }
+
+    // Load environment variables immediately
+    fetchEnvironmentVariables();
 
     // Function to show notification
     function showNotification(title, message) {
@@ -181,13 +200,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="game-modal-content">
                     <div class="dos-container" id="dos-container"></div>
+                    <div class="loading-indicator">
+                        <div class="loading-text">Loading game...</div>
+                        <div class="loading-bar">
+                            <div class="loading-progress"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="game-modal-footer">
                     <div class="game-controls">
                         <button class="fullscreen-btn" title="Toggle Fullscreen"><i class="fas fa-expand"></i></button>
                         <button class="restart-btn" title="Restart Game"><i class="fas fa-redo"></i></button>
                     </div>
-                    <div class="game-modal-info">Press ESC to access game menu</div>
                 </div>
             </div>
         `;
@@ -200,11 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Remove DOS instance
             if (window.dosInstance) {
                 try {
-                    window.dosInstance.exit();
+                    // Clean up by clearing the container instead of calling non-existent exit()
+                    const dosContainer = document.getElementById('dos-container');
+                    if (dosContainer) {
+                        dosContainer.innerHTML = '';
+                    }
+                    window.dosInstance = null;
                 } catch (e) {
-                    console.error('Error exiting DOS instance:', e);
+                    console.error('Error cleaning up DOS instance:', e);
                 }
-                window.dosInstance = null;
             }
 
             // Remove modal from DOM with animation
@@ -232,12 +260,23 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingIndicator.style.display = 'none';
             console.log('Loading timeout reached - hiding loading indicator');
             showNotification('DOS Emulator', 'Game loaded with timeout');
-        }, 10000); // 10 second timeout as failsafe
+        }, 3000); // 3 second timeout as failsafe
 
         try {
             window.dosInstance = Dos(dosContainer, {
                 wdosboxUrl: "https://v8.js-dos.com/latest/wdosbox.js",
                 url: gamePath,  // Pass the game URL directly in the config
+                kiosk: true,
+                key: jsDosKey,  // Use the key from environment variables
+                dosboxConf: `
+                    [autoexec]
+                    echo off
+                    mount c .
+                    c:
+
+                    echo on
+                    autoexec
+                `,
                 onprogress: (stage, total, loaded) => {
                     const percent = Math.floor(loaded * 100 / total);
                     loadingProgress.style.width = percent + '%';
@@ -288,40 +327,107 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.dosInstance) {
                 try {
                     // For restarting, we need to remove the old instance and create a new one
-                    // First, try to exit the current instance
-                    try {
-                        window.dosInstance.exit();
-                    } catch (e) {
-                        console.error('Error exiting DOS instance:', e);
-                    }
+                    // Instead of trying to exit() which doesn't exist, we'll recreate the container
 
-                    // Show loading again
-                    loadingIndicator.style.display = 'block';
-                    loadingProgress.style.width = '0%';
-                    loadingProgress.style.backgroundColor = '#0f0';
-                    loadingIndicator.querySelector('.loading-text').textContent = 'Restarting game...';
+                    // Remove the old container completely
+                    const oldContainer = document.getElementById('dos-container');
+                    if (oldContainer) {
+                        // Clean up by clearing the container content and references
+                        oldContainer.innerHTML = '';
+                        // Break reference to the instance
+                        window.dosInstance = null;
 
-                    // Create a new instance
-                    window.dosInstance = Dos(dosContainer, {
-                        wdosboxUrl: "https://v8.js-dos.com/latest/wdosbox.js",
-                        url: gamePath,
-                        onprogress: (stage, total, loaded) => {
-                            const percent = Math.floor(loaded * 100 / total);
-                            loadingProgress.style.width = percent + '%';
-                        },
-                        onrun: () => {
-                            loadingIndicator.style.display = 'none';
-                        },
-                        onerror: (error) => {
-                            console.error('Error restarting game:', error);
-                            loadingIndicator.querySelector('.loading-text').textContent = 'Failed to restart game';
-                            loadingProgress.style.backgroundColor = 'red';
+                        // Create a new container element
+                        const newContainer = document.createElement('div');
+                        newContainer.className = 'dos-container';
+                        newContainer.id = 'dos-container';
+
+                        // Replace the old container with the new one
+                        oldContainer.parentNode.replaceChild(newContainer, oldContainer);
+
+                        // Get or create the loading indicator
+                        let loadingIndicator = modalOverlay.querySelector('.loading-indicator');
+
+                        // If loading indicator doesn't exist for some reason, create it
+                        if (!loadingIndicator) {
+                            loadingIndicator = document.createElement('div');
+                            loadingIndicator.className = 'loading-indicator';
+                            loadingIndicator.innerHTML = `
+                                <div class="loading-text">Restarting game...</div>
+                                <div class="loading-bar">
+                                    <div class="loading-progress"></div>
+                                </div>
+                            `;
+                            modalOverlay.querySelector('.game-modal-content').appendChild(loadingIndicator);
                         }
-                    });
+
+                        // Make sure loading indicator is visible
+                        loadingIndicator.style.display = 'block';
+                        const loadingText = loadingIndicator.querySelector('.loading-text');
+                        if (loadingText) {
+                            loadingText.textContent = 'Restarting game...';
+                        }
+
+                        const loadingProgress = loadingIndicator.querySelector('.loading-progress');
+                        if (loadingProgress) {
+                            loadingProgress.style.width = '0%';
+                            loadingProgress.style.backgroundColor = '#0f0';
+                        }
+
+                        // Add a safety timeout to hide the loading indicator if onrun is never called
+                        const restartTimeout = setTimeout(() => {
+                            if (loadingIndicator) {
+                                loadingIndicator.style.display = 'none';
+                            }
+                            console.log('Restart timeout reached - hiding loading indicator');
+                            showNotification('DOS Emulator', 'Game restarted with timeout');
+                        }, 10000); // 10 second timeout as failsafe
+
+                        // Create a new instance with the new container
+                        window.dosInstance = Dos(newContainer, {
+                            wdosboxUrl: "https://v8.js-dos.com/latest/wdosbox.js",
+                            url: gamePath,
+                            onprogress: (stage, total, loaded) => {
+                                if (loadingProgress) {
+                                    const percent = Math.floor(loaded * 100 / total);
+                                    loadingProgress.style.width = percent + '%';
+                                }
+
+                                if (stage === 'Downloading' && loaded >= total && loadingText) {
+                                    loadingText.textContent = 'Starting emulation...';
+                                }
+                            },
+                            onrun: () => {
+                                // Clear the safety timeout since onrun was called
+                                clearTimeout(restartTimeout);
+
+                                // Make sure to properly hide the loading indicator
+                                if (loadingIndicator) {
+                                    loadingIndicator.style.display = 'none';
+                                    console.log('Game restarted successfully - hiding loading indicator');
+                                }
+
+                                showNotification('DOS Emulator', 'Game restarted successfully');
+                            },
+                            onerror: (error) => {
+                                // Clear the safety timeout on error
+                                clearTimeout(restartTimeout);
+
+                                console.error('Error restarting game:', error);
+                                if (loadingText) {
+                                    loadingText.textContent = 'Failed to restart game';
+                                }
+                                if (loadingProgress) {
+                                    loadingProgress.style.backgroundColor = 'red';
+                                }
+                                // Don't hide the loading indicator on error so user can see the error message
+                                showNotification('Error', 'Failed to restart game');
+                            }
+                        });
+                    }
                 } catch (error) {
                     console.error('Error restarting game:', error);
-                    loadingIndicator.querySelector('.loading-text').textContent = 'Failed to restart game';
-                    loadingProgress.style.backgroundColor = 'red';
+                    showNotification('Error', 'Failed to restart game');
                 }
             }
         });
